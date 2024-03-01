@@ -38,6 +38,9 @@ public class Program {
 
         String updateQuery = queryBuilder.buildUpdateQuery(user);
         System.out.printf("Update Query: %s\n", updateQuery);
+
+        String deleteQuery = queryBuilder.buildDeleteQuery(Employee.class, pk);
+        System.out.printf("Update Query: %s\n", deleteQuery);
     }
 
 }
