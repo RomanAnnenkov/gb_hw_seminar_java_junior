@@ -1,3 +1,8 @@
+package taskOne;
+
+import taskOne.coursesManager.CourseManagerHibernate;
+import taskOne.coursesManager.CoursesManager;
+
 public class Main {
 
     //Создайте базу данных (например, SchoolDB).
@@ -8,6 +13,18 @@ public class Main {
     //Убедитесь, что каждая операция выполняется в отдельной транзакции.
     public static void main(String[] args) {
         System.out.println("hw seminar four");
+        CoursesManager coursesManager = new CourseManagerHibernate();
 
+        Integer introId = coursesManager.create("intro",1.5);
+        coursesManager.create("docker", 10.0);
+        System.out.println(coursesManager.readAll());
+
+        coursesManager.update(introId,"intro ver2", 2.0);
+        System.out.println(coursesManager.readAll());
+
+        for (Course course: coursesManager.readAll()) {
+            coursesManager.delete(course.getId());
+        }
+        System.out.println(coursesManager.readAll());
     }
 }
