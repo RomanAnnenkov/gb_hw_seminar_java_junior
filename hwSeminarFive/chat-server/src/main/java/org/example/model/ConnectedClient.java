@@ -4,8 +4,8 @@ import org.example.view.IView;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConnectedClient implements Runnable {
     private String name;
@@ -32,15 +32,39 @@ public class ConnectedClient implements Runnable {
     }
 
     private void sendMessageToAll(String message) {
-        for (ConnectedClient client : connectedClients) {
-            try {
-                client.bufferedWriter.write(message);
-                client.bufferedWriter.newLine();
-                client.bufferedWriter.flush();
-            } catch (IOException e) {
-                client.close();
+        if (message.contains("@")) {
+            sendPersonalMessage(message);
+        } else {
+            for (ConnectedClient client : connectedClients) {
+                try {
+                    client.bufferedWriter.write(message);
+                    client.bufferedWriter.newLine();
+                    client.bufferedWriter.flush();
+                } catch (IOException e) {
+                    client.close();
+                }
             }
+        }
+    }
 
+    private void sendPersonalMessage(String message) {
+        String[] messageElements = message.split(" ");
+        Set<String> targetNames = Arrays.stream(messageElements)
+                .filter(x -> x.startsWith("@"))
+                .map(x -> x.replace("@", ""))
+                .collect(Collectors.toSet());
+        targetNames.add(this.name);
+
+        for (ConnectedClient client : connectedClients) {
+            if (targetNames.contains(client.name)) {
+                try {
+                    client.bufferedWriter.write("PM " + message);
+                    client.bufferedWriter.newLine();
+                    client.bufferedWriter.flush();
+                } catch (IOException e) {
+                    client.close();
+                }
+            }
         }
     }
 
